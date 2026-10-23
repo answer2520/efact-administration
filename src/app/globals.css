@@ -1,24 +1,55 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
+/* ── Couleurs eFact (tirées de EFactColors) ─────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand */
+  --color-primary:              #0052CC;  /* Trust Blue — boutons, états actifs */
+  --color-accent:               #2684FF;  /* Electric Blue — actions secondaires */
+  --color-brand-electric:       #00A8FF;  /* Bleu du « X » SanzuX */
+
+  /* Dashboard */
+  --color-dashboard-canvas:     #E4E9F0;  /* Fond principal */
+  --color-dashboard-card:       #EFF3F8;  /* Cartes / tuiles */
+  --color-dashboard-header-top: #E8EEF6;  /* Haut dégradé en-tête */
+  --color-dashboard-header-mist:#D2DCE8;  /* Bas dégradé en-tête */
+  --color-dashboard-logo-shelf: #F6F8FC;  /* Bloc logo */
+
+  /* Surfaces */
+  --color-background:           #FFFFFF;
+  --color-surface:              #F4F5F7;  /* Cartes légères */
+
+  /* Texte */
+  --color-text-primary:         #172B4D;
+  --color-text-secondary:       #6B778C;
 }
 
+/* ── Theme Tailwind (v4) ────────────────────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Font */
+  --font-sans: "Poppins", system-ui, -apple-system, sans-serif;
+
+  /* Couleurs exposées comme utilitaires Tailwind */
+  --color-primary:               var(--color-primary);
+  --color-accent:                var(--color-accent);
+  --color-brand-electric:        var(--color-brand-electric);
+
+  --color-dashboard-canvas:      var(--color-dashboard-canvas);
+  --color-dashboard-card:        var(--color-dashboard-card);
+  --color-dashboard-header-top:  var(--color-dashboard-header-top);
+  --color-dashboard-header-mist: var(--color-dashboard-header-mist);
+  --color-dashboard-logo-shelf:  var(--color-dashboard-logo-shelf);
+
+  --color-background:            var(--color-background);
+  --color-surface:               var(--color-surface);
+
+  --color-text-primary:          var(--color-text-primary);
+  --color-text-secondary:        var(--color-text-secondary);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ── Base ───────────────────────────────────────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
 }
