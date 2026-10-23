@@ -1,38 +1,37 @@
 /**
- * Convertit un code d'erreur métier en message lisible en français.
- *
- * Catalogue central : une seule source de vérité pour le texte affiché
- * à l'utilisateur, quel que soit le mode (fake ou http).
+ * Convertit un code d'erreur métier (contrat d'API CLAUDE.md) en message français.
+ * Le client se base toujours sur `error.code`, jamais sur le texte du message.
  */
 const MESSAGES: Record<string, string> = {
-  // --- Auth ---
-  AUTH_INVALID_CREDENTIALS: "Identifiants incorrects. Veuillez réessayer.",
-  AUTH_TOKEN_EXPIRED: "Votre session a expiré. Veuillez vous reconnecter.",
-  AUTH_UNAUTHORIZED: "Vous n'êtes pas autorisé à effectuer cette action.",
+  // Auth
+  IDENTIFIANTS_INVALIDES: "Identifiants incorrects. Veuillez réessayer.",
+  NON_AUTHENTIFIE: "Votre session a expiré. Veuillez vous reconnecter.",
 
-  // --- Entreprises ---
-  ENTREPRISE_NOT_FOUND: "Entreprise introuvable.",
-  ENTREPRISE_NIF_DUPLICATE: "Une entreprise avec ce NIF existe déjà.",
-  ENTREPRISE_VALIDATION_ERROR: "Les informations saisies sont invalides.",
+  // Entreprises
+  NIF_DEJA_UTILISE: "Ce NIF est déjà utilisé par une autre entreprise.",
+  USERNAME_DEJA_UTILISE: "Ce username OBR est déjà utilisé par une autre entreprise.",
 
-  // --- Rôles ---
-  ROLE_NOT_FOUND: "Rôle introuvable.",
-  ROLE_NAME_DUPLICATE: "Un rôle avec ce nom existe déjà.",
+  // Rôles
+  ROLE_ADMIN_PROTEGE: "Le rôle Admin par défaut ne peut pas être modifié ni supprimé.",
+  ROLE_ATTRIBUE: "Ce rôle est encore attribué à un ou plusieurs employés.",
+  PERMISSION_INCONNUE: "Une permission sélectionnée n'existe pas dans le catalogue.",
 
-  // --- Employés ---
-  EMPLOYE_NOT_FOUND: "Employé introuvable.",
-  EMPLOYE_ACTIVATION_CODE_UNAVAILABLE: "Le code d'activation n'est pas disponible.",
+  // Employés
+  ROLE_AUTRE_ENTREPRISE: "Le rôle sélectionné n'appartient pas à cette entreprise.",
+  CODE_INVALIDE: "Ce code d'activation est invalide.",
+  CODE_EXPIRE: "Ce code d'activation a expiré.",
+  CODE_DEJA_UTILISE: "Ce code d'activation a déjà été utilisé.",
+  EMPLOYE_AUTRE_ENTREPRISE: "Cet employé n'appartient pas à l'entreprise validée.",
+  EMPLOYE_DEJA_ASSOCIE: "Cet employé est déjà associé à un appareil.",
   EMPLOYE_DEVICE_NOT_LINKED: "Aucun appareil n'est associé à cet employé.",
-  EMPLOYE_DEVICE_ALREADY_LINKED: "Un appareil est déjà associé à cet employé.",
 
-  // --- Permissions ---
-  PERMISSIONS_NOT_FOUND: "Permissions introuvables.",
+  // Mobile
+  ENTREPRISE_NON_ENREGISTREE: "Cette entreprise n'est pas enregistrée sur la plateforme.",
 
-  // --- Génériques ---
-  NETWORK_ERROR: "Erreur réseau. Vérifiez votre connexion internet.",
+  // Génériques
+  INTROUVABLE: "Ressource introuvable.",
+  VALIDATION: "Les données saisies sont invalides.",
   INTERNAL_ERROR: "Une erreur inattendue s'est produite. Veuillez réessayer.",
-  VALIDATION_ERROR: "Les données saisies sont invalides.",
-  NOT_FOUND: "Ressource introuvable.",
 };
 
 export function getErrorMessage(code: string): string {

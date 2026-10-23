@@ -1,46 +1,29 @@
-import type { EntrepriseFormData } from "./types";
+import type { EntrepriseCreateData, EntrepriseUpdateData } from "./types";
 
-export interface EntrepriseValidationErrors {
+export interface EntrepriseCreateErrors {
   nif?: string;
-  nom?: string;
-  email?: string;
-  telephone?: string;
+  nomEntreprise?: string;
+  username?: string;
+  password?: string;
 }
 
-/**
- * Validation du formulaire entreprise.
- * Retourne un objet d'erreurs (vide si tout est valide).
- */
-export function validateEntreprise(
-  data: EntrepriseFormData,
-): EntrepriseValidationErrors {
-  const errors: EntrepriseValidationErrors = {};
+export interface EntrepriseUpdateErrors {
+  nomEntreprise?: string;
+  username?: string;
+}
 
-  if (!data.nif.trim()) {
-    errors.nif = "Le NIF est obligatoire.";
-  } else if (data.nif.length < 3) {
-    errors.nif = "Le NIF doit contenir au moins 3 caractères.";
-  }
-
-  if (!data.nom.trim()) {
-    errors.nom = "Le nom est obligatoire.";
-  }
-
-  if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.email = "L'adresse e-mail n'est pas valide.";
-  }
-
-  if (
-    data.telephone &&
-    data.telephone.length < 8
-  ) {
-    errors.telephone = "Le numéro de téléphone n'est pas valide.";
-  }
-
+export function validateEntrepriseCreate(data: EntrepriseCreateData): EntrepriseCreateErrors {
+  const errors: EntrepriseCreateErrors = {};
+  if (!data.nif.trim()) errors.nif = "Le NIF est obligatoire.";
+  if (!data.nomEntreprise.trim()) errors.nomEntreprise = "Le nom est obligatoire.";
+  if (!data.username.trim()) errors.username = "Le username OBR est obligatoire.";
+  if (!data.password.trim()) errors.password = "Le mot de passe OBR est obligatoire.";
   return errors;
 }
 
-/** Vérifie si les données sont valides. */
-export function isValidEntreprise(data: EntrepriseFormData): boolean {
-  return Object.keys(validateEntreprise(data)).length === 0;
+export function validateEntrepriseUpdate(data: EntrepriseUpdateData): EntrepriseUpdateErrors {
+  const errors: EntrepriseUpdateErrors = {};
+  if (!data.nomEntreprise.trim()) errors.nomEntreprise = "Le nom est obligatoire.";
+  if (!data.username.trim()) errors.username = "Le username OBR est obligatoire.";
+  return errors;
 }

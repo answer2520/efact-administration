@@ -3,16 +3,15 @@ import type { RolesApi } from "./index";
 import type { Role, RoleFormData } from "../types";
 
 export const httpRolesApi: RolesApi = {
-  async list() {
-    return httpClient<Role[]>("/roles");
+  async list(idEntreprise: string) {
+    return httpClient<Role[]>(`/entreprises/${idEntreprise}/roles`);
   },
 
-  async getById(id: string) {
-    return httpClient<Role>(`/roles/${id}`);
-  },
-
-  async create(data: RoleFormData) {
-    return httpClient<Role>("/roles", { method: "POST", body: data });
+  async create(idEntreprise: string, data: RoleFormData) {
+    return httpClient<Role>(`/entreprises/${idEntreprise}/roles`, {
+      method: "POST",
+      body: data,
+    });
   },
 
   async update(id: string, data: RoleFormData) {

@@ -3,121 +3,113 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import type { Entreprise, EntrepriseFormData } from "../types";
-import { validateEntreprise, EntrepriseValidationErrors } from "../schema";
+import type { Entreprise, EntrepriseCreateData, EntrepriseUpdateData } from "../types";
+import {
+  validateEntrepriseCreate,
+  validateEntrepriseUpdate,
+  EntrepriseCreateErrors,
+  EntrepriseUpdateErrors,
+} from "../schema";
 
-export interface EntrepriseFormProps {
-  initialData?: Entreprise;
-  onSubmit: (data: EntrepriseFormData) => Promise<void>;
+/* ---- mode création ---- */
+interface CreateProps {
+  mode: "create";
+  onSubmit: (data: EntrepriseCreateData) => Promise<void>;
   submitting?: boolean;
 }
 
-const emptyForm: EntrepriseFormData = {
-  nif: "",
-  nom: "",
-  adresse: "",
-  telephone: "",
-  email: "",
-  rccm: "",
-  statut: "actif",
-};
+/* ---- mode modification ---- */
+interface EditProps {
+  mode: "edit";
+  initialData: Entreprise;
+  onSubmit: (data: EntrepriseUpdateData) => Promise<void>;
+  submitting?: boolean;
+}
 
-export function EntrepriseForm({ initialData, onSubmit, submitting }: EntrepriseFormProps) {
-  const [formData, setFormData] = useState<EntrepriseFormData>(
-    initialData
-      ? {
-          nif: initialData.nif,
-          nom: initialData.nom,
-          adresse: initialData.adresse ?? "",
-          telephone: initialData.telephone ?? "",
-          email: initialData.email ?? "",
-          rccm: initialData.rccm ?? "",
-          statut: initialData.statut,
-        }
-      : emptyForm,
+export type EntrepriseFormProps = CreateProps | EditProps;
+
+export function EntrepriseForm(props: EntrepriseFormProps) {
+  const isEdit = props.mode === "edit";
+
+  const [nif, setNif] = useState(isEdit ? (props as EditProps).initialData.nif : "");
+  const [nomEntreprise, setNomEntreprise] = useState(
+    isEdit ? (props as EditProps).initialData.nomEntreprise : "",
   );
-  const [errors, setErrors] = useState<EntrepriseValidationErrors>({});
+  const [username, setUsername] = useState(
+    isEdit ? (props as EditProps).initialData.username : "",
+  );
+  // En mode édition, password vide = inchangé
+  const [password, setPassword] = useState("");
 
-  function updateField(field: keyof EntrepriseFormData, value: string) {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  }
+  const [errors, setErrors] = useState<EntrepriseCreateErrors & EntrepriseUpdateErrors>({});
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const validationErrors = validateEntreprise(formData);
-    setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
-    await onSubmit(formData);
+
+    if (!isEdit) {
+      const data: EntrepriseCreateData = { nif, nomEntreprise, username, password };
+      const errs = validateEntrepriseCreate(data);
+      setErrors(errs);
+      if (Object.keys(errs).length > 0) return;
+      await (props as CreateProps).onSubmit(data);
+    } else {
+      const data: EntrepriseUpdateData = {
+        nomEntreprise,
+        username,
+        ...(password ? { password } : {}),
+      };
+      const errs = validateEntrepriseUpdate(data);
+      setErrors(errs);
+      if (Object.keys(errs).length > 0) return;
+      await (props as EditProps).onSubmit(data);
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="NIF"
-          name="nif"
-          value={formData.nif}
-          onChange={(e) => updateField("nif", e.target.value)}
-          error={errors.nif}
-          required
-        />
-        <Input
-          label="RCCM"
-          name="rccm"
-          value={formData.rccm}
-          onChange={(e) => updateField("rccm", e.target.value)}
-        />
-      </div>
+      {/* NIF non modifiable en édition */}
+      <Input
+        label="NIF"
+        name="nif"
+        value={nif}
+        onChange={(e) => setNif(e.target.value)}
+        error={errors.nif}
+        required={!isEdit}
+        disabled={isEdit}
+      />
 
       <Input
-        label="Nom"
-        name="nom"
-        value={formData.nom}
-        onChange={(e) => updateField("nom", e.target.value)}
-        error={errors.nom}
+        label="Nom de l'entreprise"
+        name="nomEntreprise"
+        value={nomEntreprise}
+        onChange={(e) => setNomEntreprise(e.target.value)}
+        error={errors.nomEntreprise}
         required
       />
 
       <Input
-        label="Adresse"
-        name="adresse"
-        value={formData.adresse}
-        onChange={(e) => updateField("adresse", e.target.value)}
+        label="Username OBR (eBMS)"
+        name="username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        error={errors.username}
+        required
       />
 
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="Téléphone"
-          name="telephone"
-          value={formData.telephone}
-          onChange={(e) => updateField("telephone", e.target.value)}
-          error={errors.telephone}
-        />
-        <Input
-          label="E-mail"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={(e) => updateField("email", e.target.value)}
-          error={errors.email}
-        />
-      </div>
+      <Input
+        label={isEdit ? "Mot de passe OBR (laisser vide = inchangé)" : "Mot de passe OBR (eBMS)"}
+        name="password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        error={errors.password}
+        required={!isEdit}
+        autoComplete="new-password"
+      />
 
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-gray-700">Statut</label>
-        <select
-          value={formData.statut}
-          onChange={(e) => updateField("statut", e.target.value)}
-          className="h-10 rounded-lg border border-gray-300 px-3 text-sm focus:ring-2 focus:ring-blue-500/40"
-        >
-          <option value="actif">Actif</option>
-          <option value="inactif">Inactif</option>
-        </select>
-      </div>
-
-      <div className="flex justify-end gap-3 pt-2">
-        <Button type="submit" loading={submitting}>
-          {initialData ? "Enregistrer" : "Créer l'entreprise"}
+      <div className="flex justify-end pt-2">
+        <Button type="submit" loading={props.submitting}>
+          {isEdit ? "Enregistrer" : "Créer l'entreprise"}
         </Button>
       </div>
     </form>

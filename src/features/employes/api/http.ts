@@ -1,47 +1,41 @@
 import { httpClient } from "@/lib/http-client";
 import type { EmployesApi } from "./index";
-import type { Employe, EmployeFormData } from "../types";
+import type { Employe, EmployeCreateData, EmployeUpdateData, ActivationCodeResponse } from "../types";
 
 export const httpEmployesApi: EmployesApi = {
-  async list(entrepriseId: string) {
-    return httpClient<Employe[]>(`/entreprises/${entrepriseId}/employes`);
+  async list(idEntreprise: string) {
+    return httpClient<Employe[]>(`/entreprises/${idEntreprise}/employes`);
   },
 
-  async getById(entrepriseId: string, employeeId: string) {
-    return httpClient<Employe>(`/entreprises/${entrepriseId}/employes/${employeeId}`);
+  async getById(employeeId: string) {
+    return httpClient<Employe>(`/employes/${employeeId}`);
   },
 
-  async create(entrepriseId: string, data: EmployeFormData) {
-    return httpClient<Employe>(`/entreprises/${entrepriseId}/employes`, {
+  async create(idEntreprise: string, data: EmployeCreateData) {
+    return httpClient<Employe>(`/entreprises/${idEntreprise}/employes`, {
       method: "POST",
       body: data,
     });
   },
 
-  async update(entrepriseId: string, employeeId: string, data: EmployeFormData) {
-    return httpClient<Employe>(`/entreprises/${entrepriseId}/employes/${employeeId}`, {
-      method: "PUT",
-      body: data,
-    });
+  async update(employeeId: string, data: EmployeUpdateData) {
+    return httpClient<Employe>(`/employes/${employeeId}`, { method: "PUT", body: data });
   },
 
-  async delete(entrepriseId: string, employeeId: string) {
-    await httpClient<void>(`/entreprises/${entrepriseId}/employes/${employeeId}`, {
-      method: "DELETE",
-    });
+  async delete(employeeId: string) {
+    await httpClient<void>(`/employes/${employeeId}`, { method: "DELETE" });
   },
 
-  async generateActivationCode(entrepriseId: string, employeeId: string) {
-    return httpClient<{ code: string; expiresAt: string }>(
-      `/entreprises/${entrepriseId}/employes/${employeeId}/activation-code`,
+  async generateActivationCode(employeeId: string): Promise<ActivationCodeResponse> {
+    return httpClient<ActivationCodeResponse>(
+      `/employes/${employeeId}/code-activation`,
       { method: "POST" },
     );
   },
 
-  async unlinkDevice(entrepriseId: string, employeeId: string) {
-    return httpClient<Employe>(
-      `/entreprises/${entrepriseId}/employes/${employeeId}/device`,
-      { method: "DELETE" },
-    );
+  async dissocierAppareil(employeeId: string) {
+    return httpClient<Employe>(`/employes/${employeeId}/dissocier-appareil`, {
+      method: "POST",
+    });
   },
 };

@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { PERMISSION_CATALOG, getModulePermissionKeys } from "./permission-catalog";
+import { PERMISSION_CATALOG, getModulePermissionCodes } from "./permission-catalog";
 
 export interface PermissionPickerProps {
-  /** Clés sélectionnées, ex. ["entreprises:read", "employes:create"] */
+  /** Codes sélectionnés, ex. ["F00", "F01", "CL01"] */
   selected: string[];
   onChange: (selected: string[]) => void;
   disabled?: boolean;
@@ -13,30 +13,27 @@ export interface PermissionPickerProps {
 export function PermissionPicker({ selected, onChange, disabled }: PermissionPickerProps) {
   const selectedSet = useMemo(() => new Set(selected), [selected]);
 
-  function togglePermission(key: string) {
-    if (selectedSet.has(key)) {
-      onChange(selected.filter((k) => k !== key));
+  function toggleCode(code: string) {
+    if (selectedSet.has(code)) {
+      onChange(selected.filter((c) => c !== code));
     } else {
-      onChange([...selected, key]);
+      onChange([...selected, code]);
     }
   }
 
-  function toggleModule(moduleKey: string) {
-    const moduleKeys = getModulePermissionKeys(moduleKey);
-    const allChecked = moduleKeys.every((k) => selectedSet.has(k));
+  function toggleModule(moduleName: string) {
+    const codes = getModulePermissionCodes(moduleName);
+    const allChecked = codes.every((c) => selectedSet.has(c));
     if (allChecked) {
-      onChange(selected.filter((k) => !moduleKeys.includes(k)));
+      onChange(selected.filter((c) => !codes.includes(c)));
     } else {
-      const merged = new Set([...selected, ...moduleKeys]);
-      onChange([...merged]);
+      onChange([...new Set([...selected, ...codes])]);
     }
   }
 
   function selectAll() {
-    const allKeys = PERMISSION_CATALOG.flatMap((m) =>
-      m.actions.map((a) => `${m.key}:${a.key}`),
-    );
-    onChange(allKeys);
+    const all = PERMISSION_CATALOG.flatMap((m) => m.permissions.map((p) => p.code));
+    onChange(all);
   }
 
   function clearAll() {
@@ -68,16 +65,13 @@ export function PermissionPicker({ selected, onChange, disabled }: PermissionPic
         </div>
       </div>
 
-      {PERMISSION_CATALOG.map((module) => {
-        const moduleKeys = getModulePermissionKeys(module.key);
-        const allChecked = moduleKeys.every((k) => selectedSet.has(k));
-        const someChecked = moduleKeys.some((k) => selectedSet.has(k));
+      {PERMISSION_CATALOG.map((mod) => {
+        const codes = mod.permissions.map((p) => p.code);
+        const allChecked = codes.every((c) => selectedSet.has(c));
+        const someChecked = codes.some((c) => selectedSet.has(c));
 
         return (
-          <div
-            key={module.key}
-            className="rounded-lg border border-gray-200 p-4"
-          >
+          <div key={mod.module} className="rounded-lg border border-gray-200 p-4">
             <div className="flex items-center gap-2 border-b pb-2">
               <input
                 type="checkbox"
@@ -85,32 +79,30 @@ export function PermissionPicker({ selected, onChange, disabled }: PermissionPic
                 ref={(el) => {
                   if (el) el.indeterminate = !allChecked && someChecked;
                 }}
-                onChange={() => toggleModule(module.key)}
+                onChange={() => toggleModule(mod.module)}
                 disabled={disabled}
                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="font-medium text-gray-800">{module.label}</span>
+              <span className="font-medium text-gray-800">{mod.module}</span>
             </div>
 
             <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
-              {module.actions.map((action) => {
-                const key = `${module.key}:${action.key}`;
-                return (
-                  <label
-                    key={key}
-                    className="flex items-center gap-2 text-sm text-gray-600"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedSet.has(key)}
-                      onChange={() => togglePermission(key)}
-                      disabled={disabled}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    {action.label}
-                  </label>
-                );
-              })}
+              {mod.permissions.map((p) => (
+                <label
+                  key={p.code}
+                  className="flex items-center gap-2 text-sm text-gray-600"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedSet.has(p.code)}
+                    onChange={() => toggleCode(p.code)}
+                    disabled={disabled}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="font-mono text-xs text-gray-400">{p.code}</span>
+                  {p.label}
+                </label>
+              ))}
             </div>
           </div>
         );

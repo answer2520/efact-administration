@@ -1,39 +1,43 @@
-export interface Device {
-  model?: string;
-  os?: string;
-  registeredAt: string;
-  lastSeen?: string;
-}
-
+/**
+ * Modèle de données Employé — conforme au contrat d'API CLAUDE.md.
+ *
+ * Champs définis dans le contrat :
+ *   employeeId, nomEmployee, idEntreprise, roleId,
+ *   deviceId, codeActivationExpireLe, codeActivationUtilise
+ *
+ * Le code d'activation lui-même (codeActivation) n'est renvoyé QUE
+ * par l'endpoint POST /employes/{id}/code-activation.
+ */
 export interface Employe {
-  id: string;
-  entrepriseId: string;
-  nom: string;
-  prenom: string;
-  matricule: string;
-  telephone?: string;
-  email?: string;
-  actif: boolean;
-  /** Code d'activation à 6 chiffres, expirant après 3 minutes. */
-  activationCode?: string | null;
-  /** ISO date — date d'expiration du code d'activation. */
-  activationCodeExpiresAt?: string | null;
-  /** Appareil associé (null si aucun). */
-  device?: Device | null;
-  roleId?: string;
-  createdAt: string;
-  updatedAt: string;
+  employeeId: string;
+  nomEmployee: string;
+  idEntreprise: string;
+  roleId: string;
+  /** Identifiant matériel du téléphone associé. null = aucun appareil. */
+  deviceId: string | null;
+  /** Date d'expiration du code d'activation (ISO 8601 UTC). null = pas de code généré. */
+  codeActivationExpireLe: string | null;
+  /** true si le code a déjà été utilisé pour une activation. */
+  codeActivationUtilise: boolean;
 }
 
-export interface EmployeFormData {
-  nom: string;
-  prenom: string;
-  matricule: string;
-  telephone: string;
-  email: string;
-  actif: boolean;
-  roleId?: string;
+/** Réponse de l'endpoint POST /employes/{id}/code-activation. */
+export interface ActivationCodeResponse {
+  codeActivation: string;
+  expireLe: string; // ISO 8601 UTC
 }
 
-/** Durée de validité du code d'activation en millisecondes. */
-export const ACTIVATION_CODE_DURATION_MS = 3 * 60 * 1000; // 3 minutes
+/** Données du formulaire de création d'un employé. */
+export interface EmployeCreateData {
+  nomEmployee: string;
+  roleId: string;
+}
+
+/** Données du formulaire de modification d'un employé. */
+export interface EmployeUpdateData {
+  nomEmployee: string;
+  roleId: string;
+}
+
+/** Durée de validité du code d'activation en millisecondes (3 minutes). */
+export const ACTIVATION_CODE_DURATION_MS = 3 * 60 * 1000;

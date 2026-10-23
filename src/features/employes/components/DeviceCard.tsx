@@ -1,23 +1,21 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import type { Device } from "../types";
 
 export interface DeviceCardProps {
-  device: Device | null;
-  /** En cours de dissociation. */
+  /** deviceId tel que stocké en base (identifiant matériel du téléphone). */
+  deviceId: string | null;
   unlinking?: boolean;
-  /** Callback pour dissocier l'appareil. */
   onUnlink?: () => void;
 }
 
-export function DeviceCard({ device, unlinking, onUnlink }: DeviceCardProps) {
-  if (!device) {
+export function DeviceCard({ deviceId, unlinking, onUnlink }: DeviceCardProps) {
+  if (!deviceId) {
     return (
       <div className="rounded-lg border border-gray-200 p-4">
         <h3 className="mb-2 text-sm font-medium text-gray-700">Appareil associé</h3>
         <p className="text-sm text-gray-400">
-          Aucun appareil n&apos;est actuellement associé à cet employé.
+          Aucun appareil n&apos;est associé à cet employé.
         </p>
       </div>
     );
@@ -28,35 +26,13 @@ export function DeviceCard({ device, unlinking, onUnlink }: DeviceCardProps) {
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-medium text-gray-700">Appareil associé</h3>
         <span className="inline-flex rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">
-          Actif
+          Associé
         </span>
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-        {device.model && (
-          <>
-            <dt className="text-gray-500">Modèle</dt>
-            <dd className="text-gray-900">{device.model}</dd>
-          </>
-        )}
-        {device.os && (
-          <>
-            <dt className="text-gray-500">Système</dt>
-            <dd className="text-gray-900">{device.os}</dd>
-          </>
-        )}
-        <dt className="text-gray-500">Enregistré le</dt>
-        <dd className="text-gray-900">
-          {new Date(device.registeredAt).toLocaleDateString("fr-FR")}
-        </dd>
-        {device.lastSeen && (
-          <>
-            <dt className="text-gray-500">Dernière activité</dt>
-            <dd className="text-gray-900">
-              {new Date(device.lastSeen).toLocaleDateString("fr-FR")}
-            </dd>
-          </>
-        )}
+      <dl className="flex flex-col gap-2 text-sm">
+        <dt className="text-gray-500">Identifiant appareil</dt>
+        <dd className="break-all font-mono text-xs text-gray-700">{deviceId}</dd>
       </dl>
 
       {onUnlink && (

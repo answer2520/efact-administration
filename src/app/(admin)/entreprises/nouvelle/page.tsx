@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { EntrepriseForm } from "@/features/entreprises/components/EntrepriseForm";
 import { entreprisesApi } from "@/features/entreprises/api";
-import type { EntrepriseFormData } from "@/features/entreprises/types";
+import type { EntrepriseCreateData } from "@/features/entreprises/types";
 import { ApiError } from "@/lib/api-error";
 import { getErrorMessage } from "@/lib/error-messages";
 
@@ -14,18 +14,14 @@ export default function NouvelleEntreprisePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(data: EntrepriseFormData) {
+  async function handleSubmit(data: EntrepriseCreateData) {
     setSubmitting(true);
     setError(null);
     try {
       await entreprisesApi.create(data);
       router.push("/entreprises");
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(getErrorMessage(err.code));
-      } else {
-        setError(getErrorMessage("INTERNAL_ERROR"));
-      }
+      setError(err instanceof ApiError ? getErrorMessage(err.code) : getErrorMessage("INTERNAL_ERROR"));
       setSubmitting(false);
     }
   }
@@ -40,13 +36,11 @@ export default function NouvelleEntreprisePage() {
       </div>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
+        <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
       )}
 
       <div className="rounded-xl bg-white p-6 shadow-sm">
-        <EntrepriseForm onSubmit={handleSubmit} submitting={submitting} />
+        <EntrepriseForm mode="create" onSubmit={handleSubmit} submitting={submitting} />
       </div>
     </div>
   );

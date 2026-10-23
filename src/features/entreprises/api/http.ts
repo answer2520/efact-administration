@@ -1,6 +1,6 @@
 import { httpClient } from "@/lib/http-client";
 import type { EntreprisesApi } from "./index";
-import type { Entreprise, EntrepriseFormData } from "../types";
+import type { Entreprise, EntrepriseCreateData, EntrepriseUpdateData } from "../types";
 
 export const httpEntreprisesApi: EntreprisesApi = {
   async list(params?: { search?: string }) {
@@ -12,21 +12,17 @@ export const httpEntreprisesApi: EntreprisesApi = {
     return httpClient<Entreprise>(`/entreprises/${id}`);
   },
 
-  async create(data: EntrepriseFormData) {
-    return httpClient<Entreprise>("/entreprises", {
-      method: "POST",
-      body: data,
-    });
+  async create(data: EntrepriseCreateData) {
+    return httpClient<Entreprise>("/entreprises", { method: "POST", body: data });
   },
 
-  async update(id: string, data: EntrepriseFormData) {
-    return httpClient<Entreprise>(`/entreprises/${id}`, {
-      method: "PUT",
-      body: data,
-    });
-  },
-
-  async delete(id: string) {
-    await httpClient<void>(`/entreprises/${id}`, { method: "DELETE" });
+  async update(id: string, data: EntrepriseUpdateData) {
+    // password absent = inchangé (on n'envoie pas le champ)
+    const body: Record<string, string> = {
+      nomEntreprise: data.nomEntreprise,
+      username: data.username,
+    };
+    if (data.password) body.password = data.password;
+    return httpClient<Entreprise>(`/entreprises/${id}`, { method: "PUT", body });
   },
 };

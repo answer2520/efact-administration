@@ -1,14 +1,15 @@
 "use client";
 
-import Link from "next/link";
 import type { Role } from "../types";
 
 export interface RoleListProps {
   roles: Role[];
   loading?: boolean;
+  onEdit?: (role: Role) => void;
+  onDelete?: (role: Role) => void;
 }
 
-export function RoleList({ roles, loading }: RoleListProps) {
+export function RoleList({ roles, loading, onEdit, onDelete }: RoleListProps) {
   if (loading) {
     return (
       <div className="flex h-40 items-center justify-center text-gray-400">
@@ -30,8 +31,7 @@ export function RoleList({ roles, loading }: RoleListProps) {
       <table className="w-full text-left text-sm">
         <thead className="border-b bg-gray-50">
           <tr>
-            <th className="px-4 py-3 font-medium text-gray-600">Nom</th>
-            <th className="px-4 py-3 font-medium text-gray-600">Description</th>
+            <th className="px-4 py-3 font-medium text-gray-600">Libellé</th>
             <th className="px-4 py-3 font-medium text-gray-600">Permissions</th>
             <th className="px-4 py-3" />
           </tr>
@@ -39,15 +39,40 @@ export function RoleList({ roles, loading }: RoleListProps) {
         <tbody className="divide-y divide-gray-100">
           {roles.map((r) => (
             <tr key={r.id} className="hover:bg-gray-50">
-              <td className="px-4 py-3 font-medium text-gray-900">{r.nom}</td>
-              <td className="px-4 py-3 text-gray-600">{r.description ?? "—"}</td>
+              <td className="px-4 py-3 text-gray-900">
+                {r.label}
+                {r.isDefaultAdminRole && (
+                  <span className="ml-2 inline-flex rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
+                    Admin
+                  </span>
+                )}
+              </td>
               <td className="px-4 py-3 text-gray-500">
-                {r.permissions.length} permission{r.permissions.length > 1 ? "s" : ""}
+                {r.isDefaultAdminRole
+                  ? "Tous les droits"
+                  : `${r.rights.length} permission${r.rights.length > 1 ? "s" : ""}`}
               </td>
               <td className="px-4 py-3 text-right">
-                <Link href="#" className="text-blue-600 hover:underline">
-                  Modifier
-                </Link>
+                {!r.isDefaultAdminRole && (
+                  <div className="flex justify-end gap-3">
+                    {onEdit && (
+                      <button
+                        onClick={() => onEdit(r)}
+                        className="text-blue-600 hover:underline"
+                      >
+                        Modifier
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        onClick={() => onDelete(r)}
+                        className="text-red-600 hover:underline"
+                      >
+                        Supprimer
+                      </button>
+                    )}
+                  </div>
+                )}
               </td>
             </tr>
           ))}

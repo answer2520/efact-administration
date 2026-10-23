@@ -16,8 +16,7 @@ import { Button } from "@/components/ui/Button";
 type Tab = "infos" | "roles" | "employes";
 
 export default function EntrepriseDetailPage() {
-  const params = useParams<{ idEntreprise: string }>();
-  const idEntreprise = params.idEntreprise;
+  const { idEntreprise } = useParams<{ idEntreprise: string }>();
 
   const [entreprise, setEntreprise] = useState<Entreprise | null>(null);
   const [employes, setEmployes] = useState<Employe[]>([]);
@@ -27,32 +26,22 @@ export default function EntrepriseDetailPage() {
   const [tab, setTab] = useState<Tab>("infos");
 
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        const [ent, emp, rls] = await Promise.all([
-          entreprisesApi.getById(idEntreprise),
-          employesApi.list(idEntreprise),
-          rolesApi.list(),
-        ]);
+    Promise.all([
+      entreprisesApi.getById(idEntreprise),
+      employesApi.list(idEntreprise),
+      rolesApi.list(idEntreprise),
+    ])
+      .then(([ent, emp, rls]) => {
         setEntreprise(ent);
         setEmployes(emp);
         setRoles(rls);
-      } catch {
-        setError("Impossible de charger les données de l'entreprise.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
+      })
+      .catch(() => setError("Impossible de charger les données de l'entreprise."))
+      .finally(() => setLoading(false));
   }, [idEntreprise]);
 
   if (loading) {
-    return (
-      <div className="flex h-40 items-center justify-center text-gray-400">
-        Chargement…
-      </div>
-    );
+    return <div className="flex h-40 items-center justify-center text-gray-400">Chargement…</div>;
   }
 
   if (error || !entreprise) {
@@ -70,7 +59,7 @@ export default function EntrepriseDetailPage() {
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "infos", label: "Infos" },
-    { key: "roles", label: "Rôles" },
+    { key: "roles", label: `Rôles (${roles.length})` },
     { key: "employes", label: `Employés (${employes.length})` },
   ];
 
@@ -81,14 +70,13 @@ export default function EntrepriseDetailPage() {
           ← Retour aux entreprises
         </Link>
         <div className="mt-2 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900">{entreprise.nom}</h1>
+          <h1 className="text-xl font-bold text-gray-900">{entreprise.nomEntreprise}</h1>
           <Link href={`/entreprises/${idEntreprise}/modifier`}>
             <Button variant="secondary" size="sm">Modifier</Button>
           </Link>
         </div>
       </div>
 
-      {/* Onglets */}
       <div className="mb-6 flex gap-1 border-b border-gray-200">
         {tabs.map((t) => (
           <button
@@ -105,64 +93,29 @@ export default function EntrepriseDetailPage() {
         ))}
       </div>
 
-      {/* Contenu des onglets */}
       {tab === "infos" && (
         <div className="rounded-xl bg-white p-6 shadow-sm">
           <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
             <dt className="text-gray-500">NIF</dt>
             <dd className="font-mono text-gray-900">{entreprise.nif}</dd>
-            {entreprise.rccm && (
-              <>
-                <dt className="text-gray-500">RCCM</dt>
-                <dd className="font-mono text-gray-900">{entreprise.rccm}</dd>
-              </>
-            )}
-            {entreprise.adresse && (
-              <>
-                <dt className="text-gray-500">Adresse</dt>
-                <dd className="text-gray-900">{entreprise.adresse}</dd>
-              </>
-            )}
-            {entreprise.telephone && (
-              <>
-                <dt className="text-gray-500">Téléphone</dt>
-                <dd className="text-gray-900">{entreprise.telephone}</dd>
-              </>
-            )}
-            {entreprise.email && (
-              <>
-                <dt className="text-gray-500">E-mail</dt>
-                <dd className="text-gray-900">{entreprise.email}</dd>
-              </>
-            )}
-            <dt className="text-gray-500">Statut</dt>
-            <dd>
-              <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                entreprise.statut === "actif"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-gray-100 text-gray-500"
-              }`}>
-                {entreprise.statut === "actif" ? "Actif" : "Inactif"}
-              </span>
-            </dd>
+            <dt className="text-gray-500">Username OBR</dt>
+            <dd className="text-gray-900">{entreprise.username}</dd>
           </dl>
         </div>
       )}
 
       {tab === "roles" && (
-        <div>
-          <RoleList roles={roles} loading={false} />
-        </div>
+        <RoleList roles={roles} loading={false} />
       )}
 
       {tab === "employes" && (
         <div>
           <div className="mb-4 flex justify-end">
-            <Link href={`/entreprises/${idEntreprise}/employes`}>
+            <Link href={`/entreprises/${idEntreprise}/employes/nouveau`}>
               <Button size="sm">+ Nouvel employé</Button>
             </Link>
           </div>
-          <EmployeList employes={employes} entrepriseId={idEntreprise} loading={false} />
+          <EmployeList employes={employes} idEntreprise={idEntreprise} loading={false} />
         </div>
       )}
     </div>

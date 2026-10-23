@@ -1,104 +1,101 @@
 import { ApiError } from "@/lib/api-error";
-import { ensureSeeded, readTable, writeTable, insertRow, updateRow, deleteRow, findRow } from "@/lib/fake-db";
+import { ensureSeeded, readTable, insertRow, updateRow, findRow } from "@/lib/fake-db";
 import type { EntreprisesApi } from "./index";
-import type { Entreprise, EntrepriseFormData } from "../types";
+import type { Entreprise, EntrepriseCreateData, EntrepriseUpdateData } from "../types";
 
 const TABLE_KEY = "efact:entreprises";
 
+/** Stocke aussi le password chiffré côté fake (en clair pour la démo). */
+interface EntrepriseStored extends Entreprise {
+  _password: string;
+}
+
 function seed() {
   ensureSeeded(({ set }) => {
-    const now = new Date().toISOString();
-    set<Entreprise>(TABLE_KEY, [
+    set<EntrepriseStored>(TABLE_KEY, [
       {
-        id: "demo-1",
+        idEntreprise: "demo-1",
         nif: "NIF001",
-        nom: "Entreprise Démo SARL",
-        adresse: "123 Avenue de l'Indépendance, Kinshasa",
-        telephone: "+243 81 234 5678",
-        email: "contact@demo-sarl.cd",
-        rccm: "RCCM-KIN-2024-001",
-        statut: "actif",
-        createdAt: now,
-        updatedAt: now,
+        nomEntreprise: "Démo SARL",
+        username: "demo_sarl",
+        _password: "secret123",
       },
       {
-        id: "demo-2",
+        idEntreprise: "demo-2",
         nif: "NIF002",
-        nom: "Transport Mbolé SPRL",
-        adresse: "456 Boulevard du 30 Juin, Lubumbashi",
-        telephone: "+243 99 876 5432",
-        email: "info@transport-mbole.cd",
-        rccm: "RCCM-LUB-2023-045",
-        statut: "actif",
-        createdAt: now,
-        updatedAt: now,
+        nomEntreprise: "Transport Mbolé SPRL",
+        username: "transport_mbole",
+        _password: "secret456",
       },
     ]);
   });
 }
 
+/** Supprime le champ interne avant de retourner au client. */
+function toPublic(e: EntrepriseStored): Entreprise {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { _password, ...pub } = e;
+  return pub;
+}
+
 export const fakeEntreprisesApi: EntreprisesApi = {
   async list(params?: { search?: string }) {
     seed();
-    const rows = readTable<Entreprise>(TABLE_KEY);
+    const rows = readTable<EntrepriseStored>(TABLE_KEY);
     const search = params?.search?.trim().toLowerCase();
-    if (!search) return rows;
-    return rows.filter(
-      (e) =>
-        e.nom.toLowerCase().includes(search) ||
-        e.nif.toLowerCase().includes(search),
-    );
+    const filtered = search
+      ? rows.filter(
+          (e) =>
+            e.nomEntreprise.toLowerCase().includes(search) ||
+            e.nif.toLowerCase().includes(search),
+        )
+      : rows;
+    return filtered.map(toPublic);
   },
 
   async getById(id: string) {
     seed();
-    const row = findRow<Entreprise>(TABLE_KEY, id);
-    if (!row) {
-      throw new ApiError(404, "ENTREPRISE_NOT_FOUND", `Entreprise ${id} introuvable.`);
-    }
-    return row;
+    const row = findRow<EntrepriseStored>(TABLE_KEY, id, "idEntreprise");
+    if (!row) throw new ApiError(404, "INTROUVABLE", `Entreprise ${id} introuvable.`);
+    return toPublic(row);
   },
 
-  async create(data: EntrepriseFormData) {
+  async create(data: EntrepriseCreateData) {
     seed();
-    const rows = readTable<Entreprise>(TABLE_KEY);
+    const rows = readTable<EntrepriseStored>(TABLE_KEY);
     if (rows.some((e) => e.nif === data.nif)) {
-      throw new ApiError(409, "ENTREPRISE_NIF_DUPLICATE", `Le NIF ${data.nif} existe déjà.`);
+      throw new ApiError(409, "NIF_DEJA_UTILISE", `Le NIF ${data.nif} est déjà utilisé.`);
     }
-    const now = new Date().toISOString();
-    return insertRow<Entreprise>(TABLE_KEY, {
-      ...data,
-      createdAt: now,
-      updatedAt: now,
-    });
+    if (rows.some((e) => e.username === data.username)) {
+      throw new ApiError(409, "USERNAME_DEJA_UTILISE", `Le username ${data.username} est déjà utilisé.`);
+    }
+    const stored = insertRow<EntrepriseStored>(
+      TABLE_KEY,
+      {
+        nif: data.nif,
+        nomEntreprise: data.nomEntreprise,
+        username: data.username,
+        _password: data.password,
+      },
+      "idEntreprise",
+    );
+    return toPublic(stored);
   },
 
-  async update(id: string, data: EntrepriseFormData) {
+  async update(id: string, data: EntrepriseUpdateData) {
     seed();
-    const existing = findRow<Entreprise>(TABLE_KEY, id);
-    if (!existing) {
-      throw new ApiError(404, "ENTREPRISE_NOT_FOUND", `Entreprise ${id} introuvable.`);
+    const existing = findRow<EntrepriseStored>(TABLE_KEY, id, "idEntreprise");
+    if (!existing) throw new ApiError(404, "INTROUVABLE", `Entreprise ${id} introuvable.`);
+    const rows = readTable<EntrepriseStored>(TABLE_KEY);
+    if (rows.some((e) => e.idEntreprise !== id && e.username === data.username)) {
+      throw new ApiError(409, "USERNAME_DEJA_UTILISE", `Le username ${data.username} est déjà utilisé.`);
     }
-    const rows = readTable<Entreprise>(TABLE_KEY);
-    if (rows.some((e) => e.id !== id && e.nif === data.nif)) {
-      throw new ApiError(409, "ENTREPRISE_NIF_DUPLICATE", `Le NIF ${data.nif} existe déjà.`);
-    }
-    const updated = updateRow<Entreprise>(TABLE_KEY, id, {
-      ...data,
-      updatedAt: new Date().toISOString(),
-    });
-    return updated!;
-  },
-
-  async delete(id: string) {
-    seed();
-    const deleted = deleteRow<Entreprise>(TABLE_KEY, id);
-    if (!deleted) {
-      throw new ApiError(404, "ENTREPRISE_NOT_FOUND", `Entreprise ${id} introuvable.`);
-    }
-    // Supprimer aussi les employés associés
-    const employes = readTable<{ entrepriseId: string }>("efact:employes");
-    const remaining = employes.filter((e) => e.entrepriseId !== id);
-    writeTable("efact:employes", remaining);
+    const patch: Partial<EntrepriseStored> = {
+      nomEntreprise: data.nomEntreprise,
+      username: data.username,
+    };
+    if (data.password) patch._password = data.password;
+    const updated = updateRow<EntrepriseStored>(TABLE_KEY, id, patch, "idEntreprise");
+    return toPublic(updated!);
   },
 };
