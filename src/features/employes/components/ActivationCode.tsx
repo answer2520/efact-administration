@@ -28,6 +28,7 @@ export function ActivationCode({ code, expiresAt, generating, onGenerate }: Acti
 
   useEffect(() => {
     if (!expiresAt) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRemaining(0);
       return;
     }
@@ -69,7 +70,7 @@ export function ActivationCode({ code, expiresAt, generating, onGenerate }: Acti
             Valide pendant : <span className="font-mono font-medium text-gray-700">{formatCountdown(remaining)}</span>
           </p>
           <p className="text-xs text-gray-400">
-            Transmettez ce code à l'employé pour activer son application mobile.
+            Transmettez ce code à l&apos;employé pour activer son application mobile.
           </p>
         </div>
       ) : (
@@ -78,7 +79,7 @@ export function ActivationCode({ code, expiresAt, generating, onGenerate }: Acti
             <p className="text-sm text-red-600">Le code a expiré.</p>
           )}
           <Button onClick={onGenerate} loading={generating} variant="secondary">
-            {code ? "Régénérer un code" : "Générer un code d'activation"}
+            {code ? "Régénérer un code" : "Générer un code d&apos;activation"}
           </Button>
           {!code && (
             <p className="text-xs text-gray-400">

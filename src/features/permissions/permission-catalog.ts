@@ -54,7 +54,7 @@ export function getAllPermissionKeys(): string[] {
 
 /** Récupère les clés d'un module. */
 export function getModulePermissionKeys(moduleKey: string): string[] {
-  const module = PERMISSION_CATALOG.find((m) => m.key === moduleKey);
-  if (!module) return [];
-  return module.actions.map((a) => `${module.key}:${a.key}`);
+  const mod = PERMISSION_CATALOG.find((m) => m.key === moduleKey);
+  if (!mod) return [];
+  return mod.actions.map((a) => `${mod.key}:${a.key}`);
 }

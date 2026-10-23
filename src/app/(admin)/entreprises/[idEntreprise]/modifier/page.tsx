@@ -64,9 +64,9 @@ export default function ModifierEntreprisePage() {
           href={`/entreprises/${idEntreprise}`}
           className="text-sm text-gray-500 hover:text-gray-700"
         >
-          ← Retour à l'entreprise
+          ← Retour à l&apos;entreprise
         </Link>
-        <h1 className="mt-2 text-xl font-bold text-gray-900">Modifier l'entreprise</h1>
+        <h1 className="mt-2 text-xl font-bold text-gray-900">Modifier l&apos;entreprise</h1>
       </div>
 
       {error && (

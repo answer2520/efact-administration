@@ -34,6 +34,7 @@ export default function EntreprisesPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchEntreprises("");
   }, []);
 

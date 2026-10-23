@@ -17,7 +17,7 @@ export function DeviceCard({ device, unlinking, onUnlink }: DeviceCardProps) {
       <div className="rounded-lg border border-gray-200 p-4">
         <h3 className="mb-2 text-sm font-medium text-gray-700">Appareil associé</h3>
         <p className="text-sm text-gray-400">
-          Aucun appareil n'est actuellement associé à cet employé.
+          Aucun appareil n&apos;est actuellement associé à cet employé.
         </p>
       </div>
     );
@@ -62,7 +62,7 @@ export function DeviceCard({ device, unlinking, onUnlink }: DeviceCardProps) {
       {onUnlink && (
         <div className="mt-4 border-t pt-3">
           <Button variant="danger" size="sm" loading={unlinking} onClick={onUnlink}>
-            Dissocier l'appareil
+            Dissocier l&apos;appareil
           </Button>
         </div>
       )}

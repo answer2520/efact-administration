@@ -43,7 +43,7 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
       <div className="mb-2 text-center">
         <h1 className="text-2xl font-bold text-gray-900">eFact</h1>
-        <p className="mt-1 text-sm text-gray-500">Connectez-vous pour accéder à l'administration</p>
+        <p className="mt-1 text-sm text-gray-500">Connectez-vous pour accéder à l&apos;administration</p>
       </div>
 
       {error && (

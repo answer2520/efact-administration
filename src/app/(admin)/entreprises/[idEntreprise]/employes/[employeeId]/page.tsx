@@ -7,7 +7,6 @@ import { ActivationCode } from "@/features/employes/components/ActivationCode";
 import { DeviceCard } from "@/features/employes/components/DeviceCard";
 import { employesApi } from "@/features/employes/api";
 import type { Employe } from "@/features/employes/types";
-import { Button } from "@/components/ui/Button";
 import { ApiError } from "@/lib/api-error";
 import { getErrorMessage } from "@/lib/error-messages";
 
@@ -42,6 +41,7 @@ export default function EmployeDetailPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
     fetchEmploye();
   }, [idEntreprise, employeeId]);
 
@@ -95,7 +95,7 @@ export default function EmployeDetailPage() {
           href={`/entreprises/${idEntreprise}`}
           className="mt-4 inline-block text-sm text-blue-600 hover:underline"
         >
-          ← Retour à l'entreprise
+          ← Retour à l&apos;entreprise
         </Link>
       </div>
     );
@@ -108,7 +108,7 @@ export default function EmployeDetailPage() {
           href={`/entreprises/${idEntreprise}`}
           className="text-sm text-gray-500 hover:text-gray-700"
         >
-          ← Retour à l'entreprise
+          ← Retour à l&apos;entreprise
         </Link>
         <h1 className="mt-2 text-xl font-bold text-gray-900">
           {employe.prenom} {employe.nom}
