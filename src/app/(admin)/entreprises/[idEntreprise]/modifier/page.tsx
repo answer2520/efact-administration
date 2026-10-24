@@ -45,9 +45,9 @@ export default function ModifierEntreprisePage() {
     <div className="mx-auto max-w-2xl">
       <div className="mb-6">
         <Link href={`/entreprises/${idEntreprise}`} className="text-sm text-gray-500 hover:text-gray-700">
-          ← Retour à l&apos;entreprise
+          ← Retour à l'entreprise
         </Link>
-        <h1 className="mt-2 text-xl font-bold text-gray-900">Modifier l&apos;entreprise</h1>
+        <h1 className="mt-2 text-xl font-bold text-gray-900">Modifier l'entreprise</h1>
       </div>
 
       {error && (

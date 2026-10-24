@@ -51,7 +51,7 @@ export function ActivationCode({ codeActivation, expireLe, generating, onGenerat
 
   return (
     <div className="rounded-lg border border-gray-200 p-4">
-      <h3 className="mb-3 text-sm font-medium text-gray-700">Code d&apos;activation</h3>
+      <h3 className="mb-3 text-sm font-medium text-gray-700">Code d'activation</h3>
 
       {codeActivation && !isExpired ? (
         <div className="flex flex-col items-center gap-3">
@@ -80,7 +80,7 @@ export function ActivationCode({ codeActivation, expireLe, generating, onGenerat
             <p className="text-sm text-red-600">Le code a expiré.</p>
           )}
           <Button onClick={onGenerate} loading={generating} variant="secondary">
-            {codeActivation ? "Régénérer un code" : "Générer un code d&apos;activation"}
+            {codeActivation ? "Régénérer un code" : "Générer un code d'activation"}
           </Button>
           {!codeActivation && (
             <p className="text-xs text-gray-400">
