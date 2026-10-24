@@ -54,9 +54,9 @@ export default function ModifierEmployePage() {
           href={`/entreprises/${idEntreprise}/employes/${employeeId}`}
           className="text-sm text-[#6B778C] hover:text-[#172B4D]"
         >
-          ← Retour à l&apos;employé
+          ← Retour à l'employé
         </Link>
-        <h1 className="mt-2 text-xl font-semibold text-[#172B4D]">Modifier l&apos;employé</h1>
+        <h1 className="mt-2 text-xl font-semibold text-[#172B4D]">Modifier l'employé</h1>
       </div>
 
       {error && (

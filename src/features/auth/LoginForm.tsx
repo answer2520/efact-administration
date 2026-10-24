@@ -42,7 +42,7 @@ export function LoginForm() {
           e<span className="text-[#00A8FF]">Fact</span>
         </h1>
         <p className="mt-2 text-sm text-[#6B778C]">
-          Connectez-vous pour accéder à l&apos;administration
+          Connectez-vous pour accéder à l'administration
         </p>
       </div>
 
