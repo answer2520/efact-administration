@@ -7,9 +7,11 @@ export interface RoleListProps {
   loading?: boolean;
   onEdit?: (role: Role) => void;
   onDelete?: (role: Role) => void;
+  /** id du rôle en cours de suppression (affiche un spinner). */
+  deletingId?: string | null;
 }
 
-export function RoleList({ roles, loading, onEdit, onDelete }: RoleListProps) {
+export function RoleList({ roles, loading, onEdit, onDelete, deletingId }: RoleListProps) {
   if (loading) {
     return (
       <div className="flex h-40 items-center justify-center text-gray-400">
@@ -58,7 +60,7 @@ export function RoleList({ roles, loading, onEdit, onDelete }: RoleListProps) {
                     {onEdit && (
                       <button
                         onClick={() => onEdit(r)}
-                        className="text-blue-600 hover:underline"
+                        className="text-[#0052CC] hover:underline"
                       >
                         Modifier
                       </button>
@@ -66,9 +68,10 @@ export function RoleList({ roles, loading, onEdit, onDelete }: RoleListProps) {
                     {onDelete && (
                       <button
                         onClick={() => onDelete(r)}
-                        className="text-red-600 hover:underline"
+                        disabled={deletingId === r.id}
+                        className="text-red-600 hover:underline disabled:opacity-50"
                       >
-                        Supprimer
+                        {deletingId === r.id ? "Suppression…" : "Supprimer"}
                       </button>
                     )}
                   </div>

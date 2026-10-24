@@ -1,35 +1,28 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-/* ── Couleurs eFact (tirées de EFactColors) ─────────────────────────────── */
+/* ── Couleurs eFact ─────────────────────────────────────────────────────── */
 :root {
-  /* Brand */
-  --color-primary:              #0052CC;  /* Trust Blue — boutons, états actifs */
-  --color-accent:               #2684FF;  /* Electric Blue — actions secondaires */
-  --color-brand-electric:       #00A8FF;  /* Bleu du « X » SanzuX */
+  --color-primary:               #0052CC;
+  --color-accent:                #2684FF;
+  --color-brand-electric:        #00A8FF;
 
-  /* Dashboard */
-  --color-dashboard-canvas:     #E4E9F0;  /* Fond principal */
-  --color-dashboard-card:       #EFF3F8;  /* Cartes / tuiles */
-  --color-dashboard-header-top: #E8EEF6;  /* Haut dégradé en-tête */
-  --color-dashboard-header-mist:#D2DCE8;  /* Bas dégradé en-tête */
-  --color-dashboard-logo-shelf: #F6F8FC;  /* Bloc logo */
+  --color-dashboard-canvas:      #E4E9F0;
+  --color-dashboard-card:        #EFF3F8;
+  --color-dashboard-header-top:  #E8EEF6;
+  --color-dashboard-header-mist: #D2DCE8;
+  --color-dashboard-logo-shelf:  #F6F8FC;
 
-  /* Surfaces */
-  --color-background:           #FFFFFF;
-  --color-surface:              #F4F5F7;  /* Cartes légères */
+  --color-background:            #FFFFFF;
+  --color-surface:               #F4F5F7;
 
-  /* Texte */
-  --color-text-primary:         #172B4D;
-  --color-text-secondary:       #6B778C;
+  --color-text-primary:          #172B4D;
+  --color-text-secondary:        #6B778C;
 }
 
-/* ── Theme Tailwind (v4) ────────────────────────────────────────────────── */
+/* ── Theme Tailwind v4 ──────────────────────────────────────────────────── */
 @theme inline {
-  /* Font */
   --font-sans: "Poppins", system-ui, -apple-system, sans-serif;
 
-  /* Couleurs exposées comme utilitaires Tailwind */
   --color-primary:               var(--color-primary);
   --color-accent:                var(--color-accent);
   --color-brand-electric:        var(--color-brand-electric);
